@@ -23,9 +23,17 @@ for t in range(T-1):
 print(x)
 print(y)
 
-with open('x.dat', 'w') as f:
-    for t in range(T):
-        f.write(" ".join([str(t),str(x[t])])+"\n")
-with open('y.dat', 'w') as f:
-    for t in range(T):
-        f.write(" ".join([str(t),str(y[t])])+"\n")
+def plot_separate():
+    with open('x.dat', 'w') as f:
+        for t in range(T):
+            f.write(" ".join([str(t),str(x[t])])+"\n")
+    with open('y.dat', 'w') as f:
+        for t in range(T):
+            f.write(" ".join([str(t),str(y[t])])+"\n")
+
+def plot_together():
+    with open('data.dat', 'w') as f:
+        for t in range(T):
+            f.write(" ".join([str(t),str(x[t]),str(y[t])])+"\n")
+
+plot_together()
