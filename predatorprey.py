@@ -1,7 +1,9 @@
 import numpy as np
 
+# number of different parameter settings
 num = 14
 
+# allocate arrays to store the values of the parameters
 a = np.empty(num, dtype=float)
 b = np.empty(num, dtype=float)
 c = np.empty(num, dtype=float)
@@ -35,7 +37,7 @@ a[5] = 2.5
 # we can use our setting from above and set the paramaters g and h to small constants and it will still
 # yield oscillating population sizes
 
-# TODO ? with this parameters, the population sizes will eventually end up in a fix point
+# with this parameters, the population sizes will eventually end up in a fix point
 a[6], g[6:], h[6:] = 2.0, 0.0002, -0.0002
 
 # by increasing parameter 'a' a bit, we will get oscillating patterns:
@@ -64,10 +66,12 @@ a[13] = 0.55
 
 
 T = 20000
-osc_len = 20
+osc_len = 100
 
+# allocate arrays to store the population sizes of prey (x) and predators (y) in every time step
 x = np.empty((num, T), dtype=float)
 y = np.empty((num, T), dtype=float)
+# initialize population sizes
 x[:, 0] = 40
 y[:, 0] = 10
 
@@ -76,14 +80,10 @@ x[12:, 0] = 10
 y[12:, 0] = 40
 
 
+# generate sequences
 for t in range(T-1):
-    # generate sequences
     x[:, t+1] = x[:, t] + a*x[:, t] + b*y[:, t] + e*x[:, t]*x[:, t] + g*x[:, t]*y[:, t]
     y[:, t+1] = y[:, t] + c*x[:, t] + d*y[:, t] + f*y[:, t]*y[:, t] + h*x[:, t]*y[:, t]
-
-
-print(x)
-print(y)
 
 
 def print_means(osc_len, k):
@@ -94,6 +94,8 @@ def print_means(osc_len, k):
     """
     print("Mean of x: " + str(np.mean(x[0, (T-osc_len):T])))
     print("Mean of y: " + str(np.mean(y[0, (T-osc_len):T])))
+
+
 
 "Write the data of x and y into separate files for plotting."
 def plot_separate():
@@ -111,13 +113,44 @@ def plot_together(k):
     :param k: number of the setting (integer)
     """
     with open('data{}.dat'.format(str(k)), 'w') as file:
-        for t in range(T-100, T):
+        for t in range(T-osc_len, T):
             file.write(" ".join([str(t),str(x[k, t]),str(y[k, t])])+"\n")
 
 
-for i in range(num):
+for i in range(6):
     plot_together(i)
+    print("Setting 1_" + str(i))
     print_means(osc_len, i)
 
-# TODO: plot influence of a
-# TODO: save plots to images
+for i in range(6, 12):
+    plot_together(i)
+    print("Setting 2_" + str(i))
+    print_means(osc_len, i)
+
+for i in range(12, 14):
+    plot_together(i)
+    print("Setting 3_" + str(i))
+    print_means(osc_len, i)
+
+
+# print the means of x and y of the last osc_len to .dat files
+# for parameter setting 1:
+with open('mean_setting1.dat', 'w') as f:
+    for k in range(6):
+        x_mean = np.mean(x[k, (T - osc_len):T])
+        y_mean = np.mean(y[k, (T - osc_len):T])
+        f.write(" ".join([str(a[k]), str(x_mean), str(y_mean)])+"\n")
+
+# Increasing the value of a will cause the mean population of the prey to grow at a rate of roughly of 40
+# with respect to a. The population size of the predators remains nearly static, it decreases slightly.
+
+
+# for parameter setting 2:
+with open('mean_setting2.dat', 'w') as f:
+    for k in range(6, 12):
+        x_mean = np.mean(x[k, (T - osc_len):T])
+        y_mean = np.mean(y[k, (T - osc_len):T])
+        f.write(" ".join([str(a[k]), str(x_mean), str(y_mean)])+"\n")
+
+# increasing the value of a will cause a similar effect as for parameter setting 1. Compared to the first plot, the
+# the curves are slightly flattened.
